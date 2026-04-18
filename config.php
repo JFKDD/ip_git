@@ -1,31 +1,34 @@
 <?php
-// بيانات الاتصال من Clever Cloud
-<?php
+// تفعيل عرض الأخطاء مؤقتاً للتأكد من نجاح العمل
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
+// بيانات Clever Cloud الحقيقية من صورتك
 $host = "bdsdtmnvvctt2bgn66ua-mysql.services.clever-cloud.com";
 $user = "ugafqtnyw3dl5ct6";
 $pass = "lDtxgtyMtyGSbnX7d61R";
 $db   = "bdsdtmnvvctt2bgn66ua";
-$port = 3306; // أضف المنفذ هنا
+$port = 3306;
 
+// إنشاء الاتصال
 $conn = new mysqli($host, $user, $pass, $db, $port);
 
+// فحص الاتصال
 if ($conn->connect_error) {
-    die("فشل الاتصال: " . $conn->connect_error);
-}
-// ... بقية الكود
-// دالة لجلب الـ IP الحقيقي
-function get_client_ip() {
-    if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
-        return $_SERVER['HTTP_CLIENT_IP'];
-    } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-        return $_SERVER['HTTP_X_FORWARDED_FOR'];
-    } else {
-        return $_SERVER['REMOTE_ADDR'];
-    }
+    die("فشل الاتصال بقاعدة البيانات: " . $conn->connect_error);
 }
 
-// حفظ الـ IP فور دخول المستخدم
+// دالة جلب الـ IP
+function get_client_ip() {
+    if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+        return $_SERVER['HTTP_X_FORWARDED_FOR'];
+    }
+    return $_SERVER['REMOTE_ADDR'];
+}
+
 $ip = get_client_ip();
+
+// ملاحظة: تأكد أنك أنشأت الجدول في phpMyAdmin قبل تشغيل الكود
 $sql = "INSERT INTO visitors (ip_address) VALUES ('$ip')";
 $conn->query($sql);
 ?>
